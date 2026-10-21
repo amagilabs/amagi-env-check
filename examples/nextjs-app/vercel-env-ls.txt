@@ -1,0 +1,10 @@
+
+ name                                 value               environments        created    
+ NEXTAUTH_SECRET                      Encrypted           Production          12d ago    
+ NEXTAUTH_URL                         Encrypted           Production          12d ago    
+ DATABASE_URL                         Encrypted           Production          12d ago    
+ STRIPE_SECRET_KEY                    Encrypted           Production          9d ago     
+ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY   Encrypted           Production          9d ago     
+ NEXT_PUBLIC_POSTHOG_KEY              Encrypted           Production          3d ago     
+ LEGACY_API_TOKEN                     Encrypted           Production          41d ago    
+

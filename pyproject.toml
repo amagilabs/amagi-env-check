@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "amagi-env-diff"
+version = "0.1.0"
+description = "Diff .env, .env.example and your live Vercel, Railway or Fly environment. Reports missing, extra, empty and duplicate keys without ever printing a value."
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "AmagiLabs (Amagisolutionsgroup, Inc.)", email = "dev@amagisolutionsgroup.com" }]
+requires-python = ">=3.9"
+dependencies = []
+keywords = ["dotenv", "env", "environment-variables", "env-example", "vercel", "railway", "fly", "deploy", "cli"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Environment :: Console",
+    "Topic :: Software Development :: Build Tools",
+]
+
+[project.urls]
+Homepage = "https://github.com/amagilabs/amagi-env-diff"
+
+[project.scripts]
+amagi-env-diff = "amagi_env_diff.cli:main"
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
