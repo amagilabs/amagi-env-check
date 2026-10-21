@@ -169,6 +169,7 @@ def test_needs_two_sources(tmp_path, capsys):
     write(tmp_path, ".env", "A=1\n")
     rc, _, err = run(capsys, str(tmp_path))
     assert rc == 2 and "need at least two sources" in err
+    assert ".. " not in err and str(tmp_path.resolve()) in err
 
 
 def test_missing_paths_are_usage_errors(tmp_path, capsys):
@@ -253,7 +254,14 @@ def test_run_not_installed(tmp_path, capsys, monkeypatch):
     write(tmp_path, ".env.example", "A=\n")
     fake_platform(monkeypatch, [], on_path=())
     rc, _, err = run(capsys, str(tmp_path), "--run", "fly")
-    assert rc == 2 and "flyctl not found on PATH" in err
+    assert rc == 2 and "fly or flyctl not found on PATH" in err
+
+
+def test_run_keeps_real_error_over_not_found(tmp_path, capsys, monkeypatch):
+    write(tmp_path, ".env.example", "A=\n")
+    fake_platform(monkeypatch, [FakeProc(1, stderr="Error: no app")], on_path=("fly",))
+    rc, _, err = run(capsys, str(tmp_path), "--run", "fly")
+    assert rc == 2 and "exited 1: Error: no app" in err
 
 
 def test_run_failure_reports_exit_code(tmp_path, capsys, monkeypatch):

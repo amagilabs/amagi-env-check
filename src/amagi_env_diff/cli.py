@@ -132,10 +132,12 @@ def run_platform(platform: str, extra: List[str], target: Optional[str]) -> Tupl
                     (["flyctl", "secrets", "list", "--json"], "fly")]
 
     last_error = None
+    names = list(dict.fromkeys(argv[0] for argv, _ in attempts))
     for argv, fmt in attempts:
         exe = shutil.which(argv[0])
         if exe is None:
-            last_error = f"{argv[0]} not found on PATH"
+            if last_error is None:
+                last_error = f"{' or '.join(names)} not found on PATH"
             continue
         try:
             proc = subprocess.run([exe] + argv[1:] + extra, capture_output=True, text=True,
@@ -204,8 +206,8 @@ def _main(args: argparse.Namespace) -> int:
     if len(sources) < 2:
         found = ", ".join(s.name for s in sources) or "nothing"
         raise UsageError(
-            f"need at least two sources to compare, found {found} in {base}. "
-            "Add --live FILE, --run vercel|railway|fly, --env or --example.")
+            f"need at least two sources to compare, found {found} in {base.resolve()}; "
+            "add --live FILE, --run vercel|railway|fly, --env or --example")
 
     for s in sources:
         for w in s.parsed.warnings:
