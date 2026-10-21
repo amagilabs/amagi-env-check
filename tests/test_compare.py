@@ -98,11 +98,17 @@ def test_user_ignore_patterns_apply_everywhere():
     assert compare(srcs).findings == []
 
 
-def test_platform_keys_dropped_from_live_only():
+def test_platform_keys_dropped_from_local_and_live():
     pulled = 'VERCEL="1"\nVERCEL_ENV="production"\nTURBO_CACHE="x"\nNX_DAEMON="false"\nA="1"\n'
-    srcs = [example("A=\n"), local("A=1\nRAILWAY_TOKEN=x\n"), live(pulled, "prod")]
+    srcs = [example("A=\n"), local('A=1\nVERCEL_OIDC_TOKEN="x"\nRAILWAY_TOKEN=x\n'), live(pulled, "prod")]
     apply_ignores(srcs, [])
-    assert triples(compare(srcs)) == [("extra", ".env", "RAILWAY_TOKEN")]
+    assert compare(srcs).findings == []
+
+
+def test_platform_ignore_never_touches_example():
+    srcs = [example("A=\nFLY_REGION=\n"), local("A=1\n")]
+    apply_ignores(srcs, [])
+    assert triples(compare(srcs)) == [("missing", ".env", "FLY_REGION")]
 
 
 def test_platform_key_kept_when_example_lists_it():

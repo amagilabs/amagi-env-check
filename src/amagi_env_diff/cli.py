@@ -65,7 +65,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--ignore", metavar="PATTERN", action="append", default=[],
                    help="glob of keys to ignore everywhere (repeatable); also read from .envdiffignore")
     p.add_argument("--no-default-ignore", action="store_true",
-                   help="keep platform-injected keys (VERCEL_*, RAILWAY_*, FLY_*, TURBO_*) in the live source")
+                   help="keep platform-injected keys (VERCEL_*, RAILWAY_*, FLY_*, TURBO_*) in .env and the live source")
     p.add_argument("--matrix", action="store_true", help="also print a key-by-source table")
     p.add_argument("--format", choices=("text", "json"), default="text", help="output format")
     p.add_argument("--fail-on", metavar="LIST", default="any",

@@ -8,8 +8,9 @@ from .parsers import Entry, Parsed
 
 CATEGORIES = ("missing", "extra", "empty", "duplicate")
 
-# Variables the platforms inject on their own. Dropped from the live source
-# unless the example file lists them.
+# Variables the platforms inject on their own (`vercel env pull` also writes
+# VERCEL_OIDC_TOKEN and friends into .env.local). Dropped from the local and
+# live sources unless the example file lists them.
 PLATFORM_DEFAULT_IGNORE = (
     "VERCEL",
     "VERCEL_*",
@@ -69,7 +70,7 @@ def _matches(key: str, patterns: Iterable[str]) -> bool:
 
 
 def apply_ignores(sources: List[Source], ignore: Iterable[str], default_ignore: bool = True) -> None:
-    """Drop ignored keys in place. Platform defaults apply to live sources only."""
+    """Drop ignored keys in place. Platform defaults never touch the example file."""
     ignore = list(ignore)
     example_keys = set()
     for s in sources:
@@ -80,7 +81,7 @@ def apply_ignores(sources: List[Source], ignore: Iterable[str], default_ignore: 
         for e in s.parsed.entries:
             if _matches(e.key, ignore):
                 continue
-            if (default_ignore and s.kind == "live" and e.key not in example_keys
+            if (default_ignore and s.kind != "example" and e.key not in example_keys
                     and _matches(e.key, PLATFORM_DEFAULT_IGNORE)):
                 continue
             kept.append(e)

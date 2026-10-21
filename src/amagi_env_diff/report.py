@@ -22,12 +22,16 @@ def _groups(result: Result) -> List[Tuple[Tuple[str, str], List[Finding]]]:
     return sorted(groups.items(), key=lambda kv: order[kv[0][0]])
 
 
+def _plural(n: int, word: str) -> str:
+    return f"{n} {word}{'' if n == 1 else 's'}"
+
+
 def _source_line(result: Result) -> str:
     parts = []
     for s in result.sources:
         n = len({e.key for e in s.parsed.entries})
         note = "" if s.kind == "example" or s.values_known else ", names only"
-        parts.append(f"{s.name} ({n} key{'s' if n != 1 else ''}{note})")
+        parts.append(f"{s.name} ({_plural(n, 'key')}{note})")
     return f"Compared {len(result.sources)} sources: " + ", ".join(parts)
 
 
@@ -59,12 +63,12 @@ def render_text(result: Result, matrix: bool = False) -> str:
 
     counts = result.counts()
     total = sum(counts.values())
+    nkeys = _plural(len(result.keys), "key")
     if total:
         detail = ", ".join(f"{n} {c}" for c, n in counts.items() if n)
-        out.append(f"{total} problem{'s' if total != 1 else ''} ({detail}) across "
-                   f"{len(result.keys)} keys. No values were printed.")
+        out.append(f"{_plural(total, 'problem')} ({detail}) across {nkeys}. No values were printed.")
     else:
-        out.append(f"No differences across {len(result.keys)} keys. No values were printed.")
+        out.append(f"No differences across {nkeys}. No values were printed.")
     return "\n".join(out) + "\n"
 
 
