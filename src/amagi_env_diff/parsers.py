@@ -109,6 +109,10 @@ def parse_dotenv(text: str, allow_commented: bool = False) -> Parsed:
         if not KEY_RE.match(key):
             parsed.warnings.append(f"line {lineno}: not a KEY=VALUE line, skipped")
             continue
+        # `KEY= # note` is empty (Node's dotenv agrees); `KEY=#x` is left as a value.
+        if re.match(r"[ \t]+#", rest):
+            parsed.entries.append(Entry(key, lineno, True))
+            continue
         rest = rest.strip()
         if rest[:1] in ('"', "'", "`"):
             quote = rest[0]
