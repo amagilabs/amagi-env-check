@@ -166,7 +166,7 @@ A star helps other people find it.
 ## More from AmagiLabs
 
 - [amagilabs](https://github.com/amagilabs): other small open source dev tools from the same lab.
-- [amagi-envdrift](https://github.com/amagilabs/amagi-envdrift): find the env vars your code reads that `.env.example` never mentions.
+- [amagi-site-diff](https://github.com/amagilabs/amagi-site-diff): compare two versions of a website page by page.
 - [amagi-watch](https://github.com/amagilabs/amagi-watch): turn a video URL into a Claude-readable transcript and frame index.
 - [amagi-legal-review-skills](https://github.com/amagilabs/amagi-legal-review-skills): Claude Code skills for contract and lease review.
 
