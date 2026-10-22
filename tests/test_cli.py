@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from amagi_env_diff import __version__, cli
+from amagi_env_check import __version__, cli
 
 REPO = Path(__file__).resolve().parents[1]
 DEMO = REPO / "examples" / "nextjs-app"
@@ -29,7 +29,7 @@ def test_version(capsys):
     with pytest.raises(SystemExit) as exc:
         cli.main(["--version"])
     assert exc.value.code == 0
-    assert capsys.readouterr().out.strip() == f"amagi-env-diff {__version__}"
+    assert capsys.readouterr().out.strip() == f"amagi-env-check {__version__}"
 
 
 def test_default_files_clean(tmp_path, capsys):
@@ -95,7 +95,7 @@ def test_json_output_shape(tmp_path, capsys):
     rc, out, _ = run(capsys, str(tmp_path), "--format", "json", "--matrix")
     data = json.loads(out)
     assert rc == 1
-    assert data["tool"] == "amagi-env-diff"
+    assert data["tool"] == "amagi-env-check"
     assert data["reference"] == ".env.example"
     assert data["findings"] == [{"category": "missing", "source": ".env", "key": "B", "lines": []}]
     assert data["counts"]["missing"] == 1 and data["problems"] == 1
@@ -152,7 +152,7 @@ def test_ignore_flag_and_file(tmp_path, capsys):
     write(tmp_path, ".env", "A=1\nDEBUG_SQL=1\nLOCAL_X=1\n")
     rc, out, _ = run(capsys, str(tmp_path), "--ignore", "DEBUG_*")
     assert rc == 1 and "LOCAL_X" in out and "DEBUG_SQL" not in out
-    write(tmp_path, ".envdiffignore", "# local-only keys\nLOCAL_*\n")
+    write(tmp_path, ".envcheckignore", "# local-only keys\nLOCAL_*\n")
     rc, out, _ = run(capsys, str(tmp_path), "--ignore", "DEBUG_*")
     assert rc == 0
 
@@ -287,7 +287,7 @@ def test_run_timeout(tmp_path, capsys, monkeypatch):
 def test_python_dash_m(tmp_path):
     write(tmp_path, ".env.example", "A=\n")
     write(tmp_path, ".env", "A=1\n")
-    proc = subprocess.run([sys.executable, "-m", "amagi_env_diff", str(tmp_path)],
+    proc = subprocess.run([sys.executable, "-m", "amagi_env_check", str(tmp_path)],
                           capture_output=True, text=True)
     assert proc.returncode == 0, proc.stderr
     assert "No differences" in proc.stdout

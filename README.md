@@ -1,4 +1,4 @@
-# amagi-env-diff
+# amagi-env-check
 
 Compare `.env`, `.env.example` and the environment your app actually runs with on Vercel, Railway or Fly. It lists the keys that are missing, extra, empty or defined twice, and it never prints a value.
 
@@ -7,7 +7,7 @@ Compare `.env`, `.env.example` and the environment your app actually runs with o
 ## Install
 
 ```bash
-pipx install amagi-env-diff
+pipx install amagi-env-check
 ```
 
 Python 3.9 or newer. No dependencies.
@@ -17,20 +17,20 @@ Python 3.9 or newer. No dependencies.
 Run it from your project folder. With no options it compares `.env` (or `.env.local`) against `.env.example`:
 
 ```bash
-amagi-env-diff
+amagi-env-check
 ```
 
 Add the live environment by letting it call the platform CLI you are already logged in to:
 
 ```bash
-amagi-env-diff --run vercel
+amagi-env-check --run vercel
 ```
 
 Real output from the Next.js example that ships in this repo, using a saved `vercel env ls production` table:
 
 ```bash
 cd examples/nextjs-app
-amagi-env-diff --live vercel-env-ls.txt
+amagi-env-check --live vercel-env-ls.txt
 ```
 
 ```
@@ -86,9 +86,9 @@ There are two ways in. `--run` calls the platform CLI for you. `--live` reads ou
 ### Vercel
 
 ```bash
-amagi-env-diff --run vercel                      # production
-amagi-env-diff --run vercel --target preview
-vercel env ls production | amagi-env-diff --live -
+amagi-env-check --run vercel                      # production
+amagi-env-check --run vercel --target preview
+vercel env ls production | amagi-env-check --live -
 ```
 
 `--run vercel` uses `vercel env ls <target> --format json` and falls back to the plain table on older CLIs. Vercel only returns names here, never values.
@@ -96,9 +96,9 @@ vercel env ls production | amagi-env-diff --live -
 ### Railway
 
 ```bash
-amagi-env-diff --run railway
-amagi-env-diff --run railway --run-args "--service api"
-railway variable list --json > live.json && amagi-env-diff --live live.json
+amagi-env-check --run railway
+amagi-env-check --run railway --run-args "--service api"
+railway variable list --json > live.json && amagi-env-check --live live.json
 ```
 
 `--run railway` uses `railway variable list --json` and falls back to `railway variables --json`. Railway does return values. The tool reads each one only to check whether it is empty, then drops it. Sealed variables count as present.
@@ -106,8 +106,8 @@ railway variable list --json > live.json && amagi-env-diff --live live.json
 ### Fly
 
 ```bash
-amagi-env-diff --run fly --run-args "-a my-app"
-fly secrets list -a my-app | amagi-env-diff --live -
+amagi-env-check --run fly --run-args "-a my-app"
+fly secrets list -a my-app | amagi-env-check --live -
 ```
 
 `--run fly` uses `fly secrets list --json` (or `flyctl`). Fly returns names and digests, never values.
@@ -126,18 +126,18 @@ fly secrets list -a my-app | amagi-env-diff --live -
 ## Options
 
 ```bash
-amagi-env-diff path/to/project            # compare another folder
-amagi-env-diff --env .env.production      # pick the local file
-amagi-env-diff --example .env.sample      # pick the example file
-amagi-env-diff --no-env --run vercel      # example vs live only
-amagi-env-diff --matrix                   # add the key-by-source table
-amagi-env-diff --format json              # findings as JSON
-amagi-env-diff --ignore 'DEBUG_*'         # skip a key or glob (repeatable)
-amagi-env-diff --fail-on missing,empty    # only these categories fail the run
-amagi-env-diff --fail-on none             # report, always exit 0
+amagi-env-check path/to/project            # compare another folder
+amagi-env-check --env .env.production      # pick the local file
+amagi-env-check --example .env.sample      # pick the example file
+amagi-env-check --no-env --run vercel      # example vs live only
+amagi-env-check --matrix                   # add the key-by-source table
+amagi-env-check --format json              # findings as JSON
+amagi-env-check --ignore 'DEBUG_*'         # skip a key or glob (repeatable)
+amagi-env-check --fail-on missing,empty    # only these categories fail the run
+amagi-env-check --fail-on none             # report, always exit 0
 ```
 
-Keys the platforms inject on their own (`VERCEL`, `VERCEL_*`, `TURBO_*`, `NX_DAEMON`, `RAILWAY_*`, `FLY_*`) are skipped in `.env` and the live source unless your example file lists them, so a file written by `vercel env pull` doesn't flag `VERCEL_OIDC_TOKEN`. `--no-default-ignore` keeps them. For keys you want to silence for good, put one name or glob per line in a `.envdiffignore` file in the project folder.
+Keys the platforms inject on their own (`VERCEL`, `VERCEL_*`, `TURBO_*`, `NX_DAEMON`, `RAILWAY_*`, `FLY_*`) are skipped in `.env` and the live source unless your example file lists them, so a file written by `vercel env pull` doesn't flag `VERCEL_OIDC_TOKEN`. `--no-default-ignore` keeps them. For keys you want to silence for good, put one name or glob per line in a `.envcheckignore` file in the project folder.
 
 Exit codes: 0 means no problems, 1 means problems were found, 2 means a usage or input error.
 
@@ -149,7 +149,7 @@ It doesn't change anything either. `--run` only calls the read-only list command
 
 ## Use it from Claude Code
 
-This repo ships a skill at `.claude/skills/amagi-env-diff/SKILL.md`. Copy that folder into your own `.claude/skills/` and Claude Code can run the diff before a deploy, read the JSON, and tell you which keys to add where.
+This repo ships a skill at `.claude/skills/amagi-env-check/SKILL.md`. Copy that folder into your own `.claude/skills/` and Claude Code can run the diff before a deploy, read the JSON, and tell you which keys to add where.
 
 ## Limits
 

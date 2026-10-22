@@ -1,9 +1,9 @@
 ---
-name: amagi-env-diff
+name: amagi-env-check
 description: Compare a project's .env, .env.example and its live deploy environment (Vercel, Railway or Fly) by key name. Reports keys that are missing, extra, empty or duplicated, and never prints a value. Use before a deploy, when a deploy broke on a missing or empty env var, when .env.example has drifted from what production actually has, or when asked which env vars need to be added to Vercel, Railway or Fly.
 ---
 
-# amagi-env-diff
+# amagi-env-check
 
 A CLI that lines up three views of a project's environment variables and reports where they disagree:
 the example file (`.env.example`), the local file (`.env`, else `.env.local`), and the live platform
@@ -19,16 +19,16 @@ are never printed, logged or stored.
 
 ## How to use it
 
-Install once: `pipx install amagi-env-diff` (or `pip install -e .` from this repo in development).
+Install once: `pipx install amagi-env-check` (or `pip install -e .` from this repo in development).
 
 ```bash
-amagi-env-diff                                    # .env vs .env.example in the current folder
-amagi-env-diff --run vercel                       # also the Vercel production env (needs a linked, logged-in vercel CLI)
-amagi-env-diff --run vercel --target preview      # another Vercel environment
-amagi-env-diff --run railway --run-args "--service api"
-amagi-env-diff --run fly --run-args "-a my-app"
-vercel env ls production | amagi-env-diff --live -   # piped or saved CLI output works too
-amagi-env-diff --format json --matrix             # machine-readable findings plus a key-by-source map
+amagi-env-check                                    # .env vs .env.example in the current folder
+amagi-env-check --run vercel                       # also the Vercel production env (needs a linked, logged-in vercel CLI)
+amagi-env-check --run vercel --target preview      # another Vercel environment
+amagi-env-check --run railway --run-args "--service api"
+amagi-env-check --run fly --run-args "-a my-app"
+vercel env ls production | amagi-env-check --live -   # piped or saved CLI output works too
+amagi-env-check --format json --matrix             # machine-readable findings plus a key-by-source map
 ```
 
 Exit code 0 means no problems, 1 means problems were found, 2 means a usage or input error
@@ -45,12 +45,12 @@ Exit code 0 means no problems, 1 means problems were found, 2 means a usage or i
 
 ## Working with the results
 
-1. Run `amagi-env-diff --run <platform> --format json` and read `findings`. Each item has `category`,
+1. Run `amagi-env-check --run <platform> --format json` and read `findings`. Each item has `category`,
    `source`, `key` and `lines`. `sources[].values_known` tells you whether emptiness could be checked.
 2. For keys missing in the live source, tell the user the exact names and the platform command to add
    them (for example `vercel env add NAME production`). Never ask for, print or copy a secret value.
 3. For `extra` keys, ask whether they are still used before suggesting deletion. Platform-injected keys
    (`VERCEL_*`, `RAILWAY_*`, `FLY_*`, `TURBO_*`) are already skipped unless the example lists them.
-4. Silence known differences with `--ignore 'GLOB'` (repeatable) or a `.envdiffignore` file, one name or
+4. Silence known differences with `--ignore 'GLOB'` (repeatable) or a `.envcheckignore` file, one name or
    glob per line.
 5. Re-run until it exits 0, or use `--fail-on missing` if only missing keys should block a deploy.

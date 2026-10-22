@@ -1,5 +1,5 @@
-from amagi_env_diff.compare import Source, apply_ignores, compare
-from amagi_env_diff.parsers import parse_dotenv, parse_live
+from amagi_env_check.compare import Source, apply_ignores, compare
+from amagi_env_check.parsers import parse_dotenv, parse_live
 
 
 def example(text):

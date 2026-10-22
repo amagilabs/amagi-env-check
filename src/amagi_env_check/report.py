@@ -85,7 +85,7 @@ def render_matrix(result: Result) -> List[str]:
 
 def render_json(result: Result, matrix: bool = False) -> str:
     data = {
-        "tool": "amagi-env-diff",
+        "tool": "amagi-env-check",
         "version": __version__,
         "reference": result.reference,
         "sources": [

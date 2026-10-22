@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from amagi_env_diff.parsers import ParseError, parse_dotenv, parse_ignore_file, parse_live
+from amagi_env_check.parsers import ParseError, parse_dotenv, parse_ignore_file, parse_live
 
 
 def keys(parsed):

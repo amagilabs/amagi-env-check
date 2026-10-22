@@ -1,4 +1,4 @@
-"""Command-line entry point for amagi-env-diff."""
+"""Command-line entry point for amagi-env-check."""
 
 import argparse
 import os
@@ -16,7 +16,7 @@ from .report import render_json, render_text
 
 EXAMPLE_NAMES = (".env.example", ".env.sample", ".env.template", ".env.dist")
 LOCAL_NAMES = (".env", ".env.local")
-IGNORE_FILE = ".envdiffignore"
+IGNORE_FILE = ".envcheckignore"
 RUN_TIMEOUT = 120
 
 
@@ -26,18 +26,18 @@ class UsageError(Exception):
 
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
-        prog="amagi-env-diff",
+        prog="amagi-env-check",
         description=(
             "Compare .env, .env.example and a live deploy environment (Vercel, Railway, Fly) "
             "by key name. Reports missing, extra, empty and duplicate keys. Never prints a value."
         ),
         epilog=(
             "examples:\n"
-            "  amagi-env-diff                          .env vs .env.example in this folder\n"
-            "  amagi-env-diff --run vercel             also compare the Vercel production env\n"
-            "  vercel env ls production | amagi-env-diff --live -\n"
-            "  railway variable list --json > live.json && amagi-env-diff --live live.json\n"
-            "  amagi-env-diff --run fly --run-args \"-a my-app\" --matrix\n\n"
+            "  amagi-env-check                          .env vs .env.example in this folder\n"
+            "  amagi-env-check --run vercel             also compare the Vercel production env\n"
+            "  vercel env ls production | amagi-env-check --live -\n"
+            "  railway variable list --json > live.json && amagi-env-check --live live.json\n"
+            "  amagi-env-check --run fly --run-args \"-a my-app\" --matrix\n\n"
             "exit codes: 0 no problems, 1 problems found, 2 usage or input error"
         ),
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -63,14 +63,14 @@ def build_parser() -> argparse.ArgumentParser:
                    help="Vercel environment to keep (production, preview, development); "
                         "--run vercel defaults to production")
     p.add_argument("--ignore", metavar="PATTERN", action="append", default=[],
-                   help="glob of keys to ignore everywhere (repeatable); also read from .envdiffignore")
+                   help="glob of keys to ignore everywhere (repeatable); also read from .envcheckignore")
     p.add_argument("--no-default-ignore", action="store_true",
                    help="keep platform-injected keys (VERCEL_*, RAILWAY_*, FLY_*, TURBO_*) in .env and the live source")
     p.add_argument("--matrix", action="store_true", help="also print a key-by-source table")
     p.add_argument("--format", choices=("text", "json"), default="text", help="output format")
     p.add_argument("--fail-on", metavar="LIST", default="any",
                    help="comma list of %s, or 'any' / 'none' (default: any)" % ",".join(CATEGORIES))
-    p.add_argument("--version", action="version", version=f"amagi-env-diff {__version__}")
+    p.add_argument("--version", action="version", version=f"amagi-env-check {__version__}")
     return p
 
 
@@ -162,7 +162,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     try:
         return _main(args)
     except (UsageError, ParseError) as exc:
-        print(f"amagi-env-diff: error: {exc}", file=sys.stderr)
+        print(f"amagi-env-check: error: {exc}", file=sys.stderr)
         return 2
 
 
@@ -211,7 +211,7 @@ def _main(args: argparse.Namespace) -> int:
 
     for s in sources:
         for w in s.parsed.warnings:
-            print(f"amagi-env-diff: warning: {s.name}: {w}", file=sys.stderr)
+            print(f"amagi-env-check: warning: {s.name}: {w}", file=sys.stderr)
 
     ignore = list(args.ignore)
     ignore_file = base / IGNORE_FILE
